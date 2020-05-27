@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 
+
 @Repository
 interface NcmRepository : ReactiveCrudRepository<Ncms, Int> {
 

@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 @Table
 data class Ncms(
+
         var codigo: Int,
         var nome: String,
         var iniciovigencia: LocalDate,
