@@ -1,2 +1,3 @@
 # kotlin
-Repositorio para backends desenvolvidos em kotlin
+Repositorio para backends desenvolvidos na linguagem de programação kotlin.
+
