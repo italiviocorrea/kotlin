@@ -1,0 +1,120 @@
+api.path.base: ${API_PATH_BASE:/bdfaz/api/v1/ufibge}
+server.port: ${API_SERVER_PORT:8080}
+spring.application.name: API UF_IBGE REST Service
+
+spring.jackson.serialization.indent_output: true
+spring.jackson.serialization.write_dates_as_timestamps: false
+spring.jackson.serialization.write_durations_as_timestamps: false
+
+db.host: ${DB_SERVICE_HOST:localhost}
+db.port: ${DB_SERVICE_PORT:1433}
+spring.r2dbc.url: r2dbc:mssql://${db.host}:${db.port}/ufibgedb
+spring.r2dbc.username: ${DB_USERNAME:sa}
+spring.r2dbc.password: ${DB_USERNAME:Senha123}
+spring.r2dbc.initialization-mode: always
+spring.r2dbc.pool.initial-size: ${DB_POOL_INITIAL_SIZE:10}
+spring.r2dbc.pool.max-size: ${DB_POOL_MAX_SIZE:128}
+
+#spring.r2dbc.validation-query
+
+management.endpoints.web.base-path: ${api.path.base}/manage
+management.endpoints.web.exposure.include: '*'
+management.endpoints.web.path-mapping.health: healthcheck
+management.endpoint.health.show-details: always
+
+management.metrics.tags.application: ${spring.application.name}
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.resilience4j.circuitbreaker.calls: true
+
+info.name: ${spring.application.name}
+info.description: Tabela de UF's segundo o IBGE
+#info.environment: ${spring.profiles.active}
+info.version: 1.0.0
+
+springdoc.api-docs.path: ${api.path.base}/swagger-docs
+springdoc.swagger-ui.path: ${api.path.base}/swagger-ui-custom.html
+
+resilience4j.circuitbreaker.configs.default.registerHealthIndicator: true
+resilience4j.circuitbreaker.configs.default.slidingWindowSize: 10
+resilience4j.circuitbreaker.configs.default.minimumNumberOfCalls: 5
+resilience4j.circuitbreaker.configs.default.permittedNumberOfCallsInHalfOpenState: 3
+resilience4j.circuitbreaker.configs.default.automaticTransitionFromOpenToHalfOpenEnabled: true
+resilience4j.circuitbreaker.configs.default.waitDurationInOpenState: 2s
+resilience4j.circuitbreaker.configs.default.failureRateThreshold: 50
+resilience4j.circuitbreaker.configs.default.eventConsumerBufferSize: 100
+#resilience4j.circuitbreaker.configs.default.recordExceptions:
+#  - org.springframework.web.client.HttpServerErrorException
+#  - org.springframework.dao.DataAccessResourceFailureException
+#  - java.util.concurrent.TimeoutException
+#  - java.io.IOException
+resilience4j.circuitbreaker.configs.default.ignoreExceptions:
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNotFoundException
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNoContentException
+resilience4j.circuitbreaker.configs.shared.slidingWindowSize: 100
+resilience4j.circuitbreaker.configs.shared.permittedNumberOfCallsInHalfOpenState: 30
+resilience4j.circuitbreaker.configs.shared.waitDurationInOpenState: 1s
+resilience4j.circuitbreaker.configs.shared.failureRateThreshold: 50
+resilience4j.circuitbreaker.configs.shared.eventConsumerBufferSize: 10
+resilience4j.circuitbreaker.configs.shared.ignoreExceptions:
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNotFoundException
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNoContentException
+resilience4j.circuitbreaker.instances.ufibgeBackend.baseConfig: default
+#resilience4j.circuitbreaker.instances.backendB.registerHealthIndicator: true
+#resilience4j.circuitbreaker.instances.backendB.slidingWindowSize: 10
+#resilience4j.circuitbreaker.instances.backendB.minimumNumberOfCalls: 10
+#resilience4j.circuitbreaker.instances.backendB.permittedNumberOfCallsInHalfOpenState: 3
+#resilience4j.circuitbreaker.instances.backendB.waitDurationInOpenState: 5s
+#resilience4j.circuitbreaker.instances.backendB.failureRateThreshold: 50
+#resilience4j.circuitbreaker.instances.backendB.eventConsumerBufferSize: 10
+resilience4j.retry.configs.default.maxRetryAttempts: 3
+resilience4j.retry.configs.default.waitDuration: 1000
+#resilience4j.retry.configs.default.retryExceptions:
+#  - org.springframework.web.client.HttpServerErrorException
+#  - org.springframework.dao.DataAccessResourceFailureException
+#  - java.util.concurrent.TimeoutException
+#  - java.io.IOException
+resilience4j.retry.configs.default.ignoreExceptions:
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNotFoundException
+  - br.gov.ms.sefaz.bdfaz.ufibge.utils.UfibgeNoContentException
+resilience4j.retry.instances.ufibgeBackend.baseConfig: default
+#resilience4j.retry.instances.backendB.baseConfig: default
+#resilience4j.bulkhead.configs.default.maxConcurrentCalls: 100
+#resilience4j.bulkhead.instances.ufibgeBackend.maxConcurrentCalls: 10
+#resilience4j.bulkhead.instances.backendB.maxWaitDuration: 10ms
+#resilience4j.bulkhead.instances.backendB.maxConcurrentCalls: 20
+
+#resilience4j.thread-pool-bulkhead.configs.default.maxThreadPoolSize: 4
+#resilience4j.thread-pool-bulkhead.configs.default.coreThreadPoolSize: 2
+#resilience4j.thread-pool-bulkhead.configs.default.queueCapacity: 2
+#resilience4j.thread-pool-bulkhead.instances.ufibgeBackend.baseConfig: default
+#resilience4j.thread-pool-bulkhead.instances.backendB.maxThreadPoolSize: 1
+#resilience4j.thread-pool-bulkhead.instances.backendB.coreThreadPoolSize: 1
+#resilience4j.thread-pool-bulkhead.instances.backendB.queueCapacity: 1
+
+resilience4j.ratelimiter.configs.default.registerHealthIndicator: false
+resilience4j.ratelimiter.configs.default.limitForPeriod: 10
+resilience4j.ratelimiter.configs.default.limitRefreshPeriod: 1s
+resilience4j.ratelimiter.configs.default.timeoutDuration: 0
+resilience4j.ratelimiter.configs.default.eventConsumerBufferSize: 100
+resilience4j.ratelimiter.instances.ufibgeBackend.baseConfig: default
+#resilience4j.ratelimiter.instances.backendB.limitForPeriod: 6
+#resilience4j.ratelimiter.instances.backendB.limitRefreshPeriod: 500ms
+#resilience4j.ratelimiter.instances.backendB.timeoutDuration: 3s
+
+resilience4j.timelimiter.configs.default.cancelRunningFuture: false
+resilience4j.timelimiter.configs.default.timeoutDuration: 2s
+resilience4j.timelimiter.instances.ufibgeBackend.baseConfig: default
+#resilience4j.timelimiter.instances.backendB.baseConfig: default
+
+opentracing:
+  jaeger:
+    enabled: true
+    const-sampler:
+      decision: true
+    probabilistic-sampler:
+      sampling-rate: 1
+    udp-sender:
+      host: localhost
+      port: 6831
+    log-spans: true
+#opentracing.jaeger.http-sender.url :  http://localhost:14268/api/traces
